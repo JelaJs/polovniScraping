@@ -4,10 +4,14 @@
 require 'vendor/autoload.php';
 
 use Goutte\Client;
+use Longman\TelegramBot\Request;
+
 $client = new Client();
 $url = "https://www.polovniautomobili.com/auto-oglasi/pretraga?brand=ford&model%5B%5D=fiesta&brand2=&price_from=&price_to=4000&year_from=2008&year_to=2011&fuel%5B%5D=45&fuel%5B%5D=2309&flywheel=&atest=&region%5B%5D=Vojvodina&door_num=3013&submit_1=&without_price=1&date_limit=&showOldNew=all&modeltxt=&engine_volume_from=&engine_volume_to=&power_from=&power_to=&mileage_from=&mileage_to=&emission_class=&gearbox%5B%5D=3211&seat_num=&wheel_side=&air_condition%5B%5D=3159&air_condition%5B%5D=3160&registration=&country=&country_origin=&city=&registration_price=&page=&sort=";
 $carIds = [];
 $carLinks = [];
+$bot_api_key  = 'APIKEY';
+$bot_username = 'Polovni_krsevi_bot';
 
 $pdo = new PDO("sqlite:polovni.db");
 
@@ -32,5 +36,27 @@ foreach ($carIds as $index => $carId) {
             'car_id' => $carId,
             'car_link' => $carLink
         ]);
+
+        try {
+            // Create Telegram API object
+            $telegram = new Longman\TelegramBot\Telegram($bot_api_key, $bot_username);
+
+            $data = [
+                'chat_id' => 'CHAT_ID',
+                'text'    => 'test message',
+            ];
+
+            // Send message
+            $response = Request::sendMessage($data);
+
+            // Handle telegram getUpdates request
+            //$telegram->getUpdates();
+
+        } catch (Longman\TelegramBot\Exception\TelegramException $e) {
+            // log telegram errors
+            // echo $e->getMessage();
+        }
+    } else {
+        return;
     }
 }
